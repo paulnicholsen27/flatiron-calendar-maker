@@ -24,7 +24,7 @@ class AccessController < ApplicationController
     service.authorization = client
 
     @calendar_list = service.list_calendar_lists
-    binding.pry
+    
   end
 
   private
