@@ -4,10 +4,7 @@
 
     <%= collection_select(:calendar, :id, @calendar_list, :id, :summary, prompt: true) %>
 
-    <% (1..5).each do |i| %>
-        <%= label_tag "Module #{i}" %>
-        <%= check_box_tag "module[]", "Module #{i}" %>
-    <% end %>   
-    
+    <%= select(:module, :id, (1..5).to_a.collect {|v| ["Module #{v}", v] }, {prompt: true}) %>
+
     <%= submit_tag "Update calendar" %>
 <% end %>
