@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
-  get '/redirect', to: 'access#redirect', as: 'redirect'
-  get '/callback', to: 'access#callback', as: 'callback'
-  get '/calendars', to: 'access#calendars', as: 'calendars'
-
+  root 'calendars#new'
+  get '/redirect', to: 'calendars#redirect', as: 'redirect'
+  get '/callback', to: 'calendars#callback', as: 'callback'
+  get '/calendars', to: 'calendars#list', as: 'calendars'
+  post '/calendars/create', to: 'calendars#create'
 end

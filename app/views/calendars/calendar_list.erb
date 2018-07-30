@@ -1,0 +1,10 @@
+<ul>
+  <% @calendar_list.items.each do |calendar| %>
+    <li><%= calendar.summary %> (<%= calendar.id %>)</li>
+  <% end %>
+</ul>
+
+    <% (1..5).each do |i| %>
+        <%= label_tag "Module #{i}" %>
+        <%= check_box_tag "module[]", "Module #{i}" %>
+    <% end %>   

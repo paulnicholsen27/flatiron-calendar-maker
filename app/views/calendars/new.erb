@@ -1,0 +1,13 @@
+<h1>Flatiron Calendarizer</h1>
+
+<%= form_tag("/calendars/create") do %>
+
+    <%= collection_select(:calendar, :id, @calendar_list, :id, :summary, prompt: true) %>
+
+    <% (1..5).each do |i| %>
+        <%= label_tag "Module #{i}" %>
+        <%= check_box_tag "module[]", "Module #{i}" %>
+    <% end %>   
+    
+    <%= submit_tag "Update calendar" %>
+<% end %>
