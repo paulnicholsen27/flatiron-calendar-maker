@@ -1,4 +1,5 @@
 class CalendarsController < ApplicationController
+
   def redirect
     client = Signet::OAuth2::Client.new(client_options)
     redirect_to client.authorization_uri.to_s
@@ -60,18 +61,18 @@ class CalendarsController < ApplicationController
     # the lecture as the value.
     case module_number
     when 1
-      {1: "Hashketball Review",
-       2: "Hashes and the Internet",
-       3: "Intro to OO",
-       4: "Object Relations (one to many)",
-       5: "Object Relations (many to many)",
-       8: "SQL Review",
-       9: "Intro to ORMs",
-       10: "Dynamic ORMs",
-       11: "Intro to ActiveRecord",
-       15: "ActiveRecord Associations",
-       18: "Intro to Testing",
-       19: "Intro to the Internet"
+      {1 => "Hashketball Review",
+       2 => "Hashes and the Internet",
+       3 => "Intro to OO",
+       4 => "Object Relations (one to many)",
+       5 => "Object Relations (many to many)",
+       8 => "SQL Review",
+       9 => "Intro to ORMs",
+       10 => "Dynamic ORMs",
+       11 => "Intro to ActiveRecord",
+       15 => "ActiveRecord Associations",
+       18 => "Intro to Testing",
+       19 => "Intro to the Internet"
       }
     when 2
       pass
@@ -84,6 +85,6 @@ class CalendarsController < ApplicationController
     else 
       "Module number must be an integer between 1 and 5, inclusive."
     end
-
   end
+
 end
