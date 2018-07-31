@@ -4,7 +4,8 @@
 
     <%= collection_select(:calendar, :id, @calendar_list, :id, :summary, prompt: true) %>
 
-    <%= select(:module, :id, (1..5).to_a.collect {|v| ["Module #{v}", v] }, {prompt: true}) %>
+    <%= select(:calendar, "module", (1..5).to_a.collect {|v| ["Module #{v}", v] }, {prompt: true}) %>
 
+    <%= date_field(:calendar, "start_date", min: Date.today) %>
     <%= submit_tag "Update calendar" %>
 <% end %>
