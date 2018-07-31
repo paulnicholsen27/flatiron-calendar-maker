@@ -1,11 +1,28 @@
-<h1>Flatiron Calendarizer</h1>
+<div class="container">
+    <h1>Flatiron Calendarizer</h1>
 
-<%= form_tag("/calendars/create") do %>
+    <%= form_tag("/calendars/create", class: "my_form") do %>
 
-    <%= collection_select(:calendar, :id, @calendar_list, :id, :summary, prompt: true) %>
+        <div class="form-group">
+        <label for="calendar_id">Calendar</label>
+        <%= collection_select :calendar, :id, @calendar_list, :id, :summary, {prompt: "Select a calendar"}, {class: "form-control"} %>
+        </div>
 
-    <%= select(:calendar, "module", (1..5).to_a.collect {|v| ["Module #{v}", v] }, {prompt: true}) %>
+        <div class="form-group">
+        <label for="calendar_module">Module</label>
+        <%= select(:calendar, "module", (1..5).to_a.collect {|v| ["Module #{v}", v] }, {prompt: true}, {:class=>'form-control'}) %>
+        </div>
 
-    <%= date_field(:calendar, "start_date", min: Date.today) %>
-    <%= submit_tag "Update calendar" %>
-<% end %>
+        <div class="form-group">
+        <label for="calendar_start_date">Day 1 of Module</label>
+        <%= date_field(:calendar, "start_date", min: Date.today, :value => Time.now.strftime('%Y-%m-%d'), :class=>'form-control') %>
+        </div>
+
+        <div class="form-group">
+        <label for="calendar_time">Default lecture start time</label>
+        <input type="time" id="calendar_time" name="calendar[time]" min="9:00" max="18:00"  value="10:00" step="900" />
+        </div>
+
+        <%= submit_tag "Populate calendar" %>
+    <% end %>
+</div>
