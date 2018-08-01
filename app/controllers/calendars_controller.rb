@@ -1,3 +1,5 @@
+require 'pry'
+
 class CalendarsController < ApplicationController
 
   def redirect
@@ -33,11 +35,43 @@ class CalendarsController < ApplicationController
   end
 
   def create
+    calendar_id = params[:calendar][:id]
+    module_number = params[:calendar][:module]
+    start_date = params[:calendar][:start_date]
+    start_time = params[:calendar][:start_time]
+    lesson_hash = get_module_lectures(module_number)
+    lesson_hash.each do |days_from_start, lesson_name|
+      lesson_datetime = DateTime.parse("#{start_date} #{start_time}").advance(:days => days_from_start)
+      new_event(calendar_id, lesson_datetime, lesson_name)
+    end
+    redirect_to calendars_url
   end
 
-  # def list
-  #   render :calendar_list
-  # end
+  def new_event(calendar_id, lesson_datetime, lesson_name)
+      client = Signet::OAuth2::Client.new(client_options)
+      client.update!(session[:authorization])
+
+      service = Google::Apis::CalendarV3::CalendarService.new
+      service.authorization = client
+
+
+      event = Google::Apis::CalendarV3::Event.new({
+        # start: Google::Apis::CalendarV3::EventDateTime.new(datetime: lesson_datetime),
+        # end: Google::Apis::CalendarV3::EventDateTime.new(datetime: lesson_datetime.advance(:hours => 1)),
+        start: {
+          'date_time': lesson_datetime,
+          'time_zone': 'America/Los_Angeles'
+        },
+        end:{
+          'date_time': lesson_datetime.advance(:hours => 1),
+          'time_zone': 'America/Los_Angeles'
+        },
+        summary: lesson_name
+      })
+      # binding.pry
+      service.insert_event(calendar_id, event)
+
+    end
 
   private
 
@@ -60,27 +94,27 @@ class CalendarsController < ApplicationController
     # returns a hash with the day of the lecture as the key and the name of 
     # the lecture as the value.
     case module_number
-    when 1
-      {1 => "Hashketball Review",
-       2 => "Hashes and the Internet",
-       3 => "Intro to OO",
-       4 => "Object Relations (one to many)",
-       5 => "Object Relations (many to many)",
-       8 => "SQL Review",
-       9 => "Intro to ORMs",
-       10 => "Dynamic ORMs",
-       11 => "Intro to ActiveRecord",
-       15 => "ActiveRecord Associations",
-       18 => "Intro to Testing",
-       19 => "Intro to the Internet"
+    when "1"
+      {0 => "Hashketball Review",
+       1 => "Hashes and the Internet",
+       # 2 => "Intro to OO",
+       # 3 => "Object Relations (one to many)",
+       # 4 => "Object Relations (many to many)",
+       # 7 => "SQL Review",
+       # 8 => "Intro to ORMs",
+       # 9 => "Dynamic ORMs",
+       # 10 => "Intro to ActiveRecord",
+       # 14 => "ActiveRecord Associations",
+       # 17 => "Intro to Testing",
+       # 18 => "Intro to the Internet"
       }
-    when 2
+    when "2"
       pass
-    when 3
+    when "3"
       pass
-    when 4
+    when "4"
       pass
-    when 5
+    when "5"
       pass
     else 
       "Module number must be an integer between 1 and 5, inclusive."
