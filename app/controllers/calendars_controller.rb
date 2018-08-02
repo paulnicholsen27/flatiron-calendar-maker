@@ -1,4 +1,4 @@
-require 'pry'
+require 'tzinfo'
 
 class CalendarsController < ApplicationController
 
@@ -32,6 +32,7 @@ class CalendarsController < ApplicationController
     all_calendars = get_calendars.items
     @calendar_list = all_calendars.select {|calendar| calendar.access_role=="owner"}
     @calendar_list.sort! { |a, b|  a.summary <=> b.summary }
+    @timezones = TZInfo::Timezone.all_identifiers
   end
 
   def create
@@ -39,15 +40,18 @@ class CalendarsController < ApplicationController
     module_number = params[:calendar][:module]
     start_date = params[:calendar][:start_date]
     start_time = params[:calendar][:start_time]
+    time_zone = params[:calendar][:time_zone]
     lesson_hash = get_module_lectures(module_number)
+    # Time.zone = 'America/New_York'
+    # binding.pry
     lesson_hash.each do |days_from_start, lesson_name|
       lesson_datetime = DateTime.parse("#{start_date} #{start_time}").advance(:days => days_from_start)
-      new_event(calendar_id, lesson_datetime, lesson_name)
+      new_event(calendar_id, lesson_datetime, lesson_name, time_zone)
     end
-    redirect_to calendars_url
+    redirect_to "https://calendar.google.com/calendar/embed?src=#{calendar_id}"
   end
 
-  def new_event(calendar_id, lesson_datetime, lesson_name)
+  def new_event(calendar_id, lesson_datetime, lesson_name, time_zone)
       client = Signet::OAuth2::Client.new(client_options)
       client.update!(session[:authorization])
 
@@ -60,11 +64,11 @@ class CalendarsController < ApplicationController
         # end: Google::Apis::CalendarV3::EventDateTime.new(datetime: lesson_datetime.advance(:hours => 1)),
         start: {
           'date_time': lesson_datetime,
-          'time_zone': 'America/Los_Angeles'
+          # 'time_zone': 'America/New_York'
         },
         end:{
           'date_time': lesson_datetime.advance(:hours => 1),
-          'time_zone': 'America/Los_Angeles'
+          # 'time_zone': 'America/New_York'
         },
         summary: lesson_name
       })
@@ -96,9 +100,9 @@ class CalendarsController < ApplicationController
     case module_number
     when "1"
       {0 => "Hashketball Review",
-       1 => "Hashes and the Internet",
+       # 1 => "Hashes and the Internet",
        # 2 => "Intro to OO",
-       # 3 => "Object Relations (one to many)",
+       3 => "Object Relations (one to many)",
        # 4 => "Object Relations (many to many)",
        # 7 => "SQL Review",
        # 8 => "Intro to ORMs",
