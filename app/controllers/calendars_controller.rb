@@ -2,7 +2,7 @@ require 'tzinfo'
 
 class CalendarsController < ApplicationController
 
-  def redirect
+  def authorize
     client = Signet::OAuth2::Client.new(client_options)
     redirect_to client.authorization_uri.to_s
   end
@@ -15,7 +15,7 @@ class CalendarsController < ApplicationController
 
     session[:authorization] = response
 
-    redirect_to calendars_url
+    redirect_to root_url
   end
 
   def get_calendars
@@ -33,6 +33,12 @@ class CalendarsController < ApplicationController
     @calendar_list = all_calendars.select {|calendar| calendar.access_role=="owner"}
     @calendar_list.sort! { |a, b|  a.summary <=> b.summary }
     @timezones = TZInfo::Timezone.all_identifiers
+    rescue Google::Apis::AuthorizationError
+      response = client.refresh!
+      session[:authorization] = session[:authorization].merge(response)
+      rescue Google::Apis::AuthorizationError
+        redirect_to authorize_url
+      retry
   end
 
   def create
