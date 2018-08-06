@@ -33,6 +33,8 @@ class CalendarsController < ApplicationController
     @calendar_list = all_calendars.select {|calendar| calendar.access_role=="owner"}
     @calendar_list.sort! { |a, b|  a.summary <=> b.summary }
     @timezones = TZInfo::Timezone.all_identifiers
+    # if unauthorized tries to refresh the token.  If it still doesn't work,
+    # redirect to authorization page.  This was just my best guess.
     rescue Google::Apis::AuthorizationError
       response = client.refresh!
       session[:authorization] = session[:authorization].merge(response)
