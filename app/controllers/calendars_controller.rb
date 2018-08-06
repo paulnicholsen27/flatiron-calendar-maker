@@ -121,7 +121,18 @@ class CalendarsController < ApplicationController
        # 18 => "Intro to the Internet"
       }
     when "2"
-      pass
+      {
+        0 => "Sinatra and MVC",
+        1 => "Sinatra Forms and REST",
+        2 => "Sinatra Forms and Associated Objects",
+        3 => "Sinatra Forms and Associated Objects cont.",
+        4 => "Intro to Rails",
+        7 => "Rails Forms & REST",
+        8 => "Rails Associations",
+        9 => "Rails Forms and Validations",
+        14 => "Sessions and Cookies",
+        15 => "Rails Authorization"
+      }
     when "3"
       pass
     when "4"
