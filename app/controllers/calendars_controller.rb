@@ -36,6 +36,7 @@ class CalendarsController < ApplicationController
     # if unauthorized tries to refresh the token.  If it still doesn't work,
     # redirect to authorization page.  This was just my best guess.
     rescue Google::Apis::AuthorizationError
+      client = Signet::OAuth2::Client.new(client_options)
       response = client.refresh!
       session[:authorization] = session[:authorization].merge(response)
       rescue Google::Apis::AuthorizationError
@@ -59,6 +60,15 @@ class CalendarsController < ApplicationController
     redirect_to "https://calendar.google.com/calendar/embed?src=#{calendar_id}"
   end
 
+  # event = Google::Apis::CalendarV3::Event.new(
+  #   start: Google::Apis::CalendarV3::EventDateTime.new(
+    #date_time: lesson_datetime.to_datetime.rfc3339),
+  #   end: Google::Apis::CalendarV3::EventDateTime.new(
+  #        date_time: lesson_datetime.advance(:hours => 1).to_datetime.rfc3339),
+  #   summary: lesson_name
+  # )
+  # service.insert_event(calendar_id, event)
+
   def new_event(calendar_id, lesson_datetime, lesson_name, time_zone)
       client = Signet::OAuth2::Client.new(client_options)
       client.update!(session[:authorization])
@@ -67,20 +77,25 @@ class CalendarsController < ApplicationController
       service.authorization = client
 
 
-      event = Google::Apis::CalendarV3::Event.new({
+      # event = Google::Apis::CalendarV3::Event.new({
         # start: Google::Apis::CalendarV3::EventDateTime.new(datetime: lesson_datetime),
         # end: Google::Apis::CalendarV3::EventDateTime.new(datetime: lesson_datetime.advance(:hours => 1)),
-        start: {
-          'date_time': lesson_datetime,
-          # 'time_zone': 'America/New_York'
-        },
-        end:{
-          'date_time': lesson_datetime.advance(:hours => 1),
-          # 'time_zone': 'America/New_York'
-        },
-        summary: lesson_name
-      })
+      #   start: {
+      #     'date_time': lesson_datetime,
+      #     # 'time_zone': 'America/New_York'
+      #   },
+      #   end:{
+      #     'date_time': lesson_datetime.advance(:hours => 1),
+      #     # 'time_zone': 'America/New_York'
+      #   },
+      #   summary: lesson_name
+      # })
       # binding.pry
+      event = Google::Apis::CalendarV3::Event.new(
+        start: Google::Apis::CalendarV3::EventDateTime.new(date_time: lesson_datetime.to_datetime.rfc3339),
+        end: Google::Apis::CalendarV3::EventDateTime.new(date_time: lesson_datetime.advance(:hours => 1).to_datetime.rfc3339),
+        summary: lesson_name
+      )
       service.insert_event(calendar_id, event)
 
     end

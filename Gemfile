@@ -60,3 +60,4 @@ end
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'google-api-client', require: 'google/apis/calendar_v3'
 gem 'pry'
+gem 'sqlite3'
