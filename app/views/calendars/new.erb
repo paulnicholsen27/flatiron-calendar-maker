@@ -4,18 +4,27 @@
     <%= form_tag("/calendars/create", class: "my_form") do %>
 
         <div class="form-group">
-        <label for="calendar_id">Calendar</label>
-        <%= collection_select :calendar, :id, @calendar_list, :id, :summary, {prompt: "Select a calendar"}, {class: "form-control"} %>
-        </div>
+        <label for="calendar[id]">Calendar</label>
+        <select required name="calendar[id]">
+            <option value="">Select a Calendar</option>
+            <% @calendar_list.each do |calendar| %>
+                <option value="<%= calendar.id %>"><%= calendar.summary %></option>
+            <% end %>
+
+        </select>
 
         <div class="form-group">
-        <label for="calendar_module">Module</label>
-        <%= select(:calendar, "module", (1..5).to_a.collect {|v| ["Module #{v}", v] }, {prompt: true}, {:class=>'form-control'}) %>
+        <label for="calendar[module]">Module</label>
+        <select required name="calendar[module]">
+            <option value="">Select a Module</option>
+            <% (1..5).to_a.each do |module_number| %>
+                <option value="<%=module_number%>"><%= "Module #{module_number}" %></option>
+            <% end %>
         </div>
 
         <div class="form-group">
         <label for="calendar_start_date">Day 1 of Module</label>
-        <%= date_field(:calendar, "start_date", min: Date.today, :value => Time.now.strftime('%Y-%m-%d'), :class=>'form-control') %>
+        <%= date_field(:calendar, "start_date", min: Date.today, :value => Time.now.strftime('%Y-%m-%d'), :class=>'form-control', :required=>true) %>
         <small id="start_date_help" class="form-text text-muted">Choose the Monday of the week the module begins.</small>
         </div>
 
@@ -29,6 +38,6 @@
         <%= select("calendar", "time_zone", @timezones, {:class=>'form-control'}) %>
         </div>
 
-        <%= submit_tag "Populate calendar" %>
+        <%= submit_tag "Populate calendar", :onclick => "return checkMonday()" %>
     <% end %>
 </div>

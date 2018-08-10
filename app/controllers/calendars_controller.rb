@@ -45,6 +45,7 @@ class CalendarsController < ApplicationController
   end
 
   def create
+    # binding.pry
     calendar_id = params[:calendar][:id]
     module_number = params[:calendar][:module]
     start_date = params[:calendar][:start_date]
