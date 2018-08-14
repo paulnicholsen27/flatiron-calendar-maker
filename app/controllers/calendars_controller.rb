@@ -24,8 +24,13 @@ class CalendarsController < ApplicationController
 
     service = Google::Apis::CalendarV3::CalendarService.new
     service.authorization = client
-
-    service.list_calendar_lists
+    begin
+      service.list_calendar_lists
+        rescue Google::Apis::AuthorizationError
+          response = client.refresh!
+          session[:authorization] = session[:authorization].merge(response)
+          retry
+    end
   end
 
   def new
@@ -35,13 +40,7 @@ class CalendarsController < ApplicationController
     @timezones = TZInfo::Timezone.all_identifiers
     # if unauthorized tries to refresh the token.  If it still doesn't work,
     # redirect to authorization page.  This was just my best guess.
-    rescue Google::Apis::AuthorizationError
-      client = Signet::OAuth2::Client.new(client_options)
-      response = client.refresh!
-      session[:authorization] = session[:authorization].merge(response)
-      rescue Google::Apis::AuthorizationError
-        redirect_to authorize_url
-      retry
+
   end
 
   def create
@@ -52,10 +51,8 @@ class CalendarsController < ApplicationController
     start_time = params[:calendar][:start_time]
     time_zone = params[:calendar][:time_zone]
     lesson_hash = get_module_lectures(module_number)
-    # Time.zone = 'America/New_York'
-    # binding.pry
     lesson_hash.each do |days_from_start, lesson_name|
-      lesson_datetime = DateTime.parse("#{start_date} #{start_time}").advance(:days => days_from_start)
+      lesson_datetime = ActiveSupport::TimeZone[time_zone].parse("#{start_date} #{start_time}").advance(:days => days_from_start)
       new_event(calendar_id, lesson_datetime, lesson_name, time_zone)
     end
     redirect_to "https://calendar.google.com/calendar/embed?src=#{calendar_id}"
