@@ -21,12 +21,19 @@ class CalendarsController < ApplicationController
   def get_calendars
     client = Signet::OAuth2::Client.new(client_options)
     client.update!(session[:authorization])
-
+    # https://stackoverflow.com/questions/51793689/cant-refresh-google-api-token-in-rails-app
+    # client.update!(
+    #   additional_parameters: {
+    #     access_type: 'offline',
+    #     prompt: 'consent'
+    #   }
+    # )
     service = Google::Apis::CalendarV3::CalendarService.new
     service.authorization = client
     begin
       service.list_calendar_lists
         rescue Google::Apis::AuthorizationError
+          # binding.pry
           response = client.refresh!
           session[:authorization] = session[:authorization].merge(response)
           retry
@@ -38,13 +45,9 @@ class CalendarsController < ApplicationController
     @calendar_list = all_calendars.select {|calendar| calendar.access_role=="owner"}
     @calendar_list.sort! { |a, b|  a.summary <=> b.summary }
     @timezones = TZInfo::Timezone.all_identifiers
-    # if unauthorized tries to refresh the token.  If it still doesn't work,
-    # redirect to authorization page.  This was just my best guess.
-
   end
 
   def create
-    # binding.pry
     calendar_id = params[:calendar][:id]
     module_number = params[:calendar][:module]
     start_date = params[:calendar][:start_date]
@@ -58,14 +61,6 @@ class CalendarsController < ApplicationController
     redirect_to "https://calendar.google.com/calendar/embed?src=#{calendar_id}"
   end
 
-  # event = Google::Apis::CalendarV3::Event.new(
-  #   start: Google::Apis::CalendarV3::EventDateTime.new(
-    #date_time: lesson_datetime.to_datetime.rfc3339),
-  #   end: Google::Apis::CalendarV3::EventDateTime.new(
-  #        date_time: lesson_datetime.advance(:hours => 1).to_datetime.rfc3339),
-  #   summary: lesson_name
-  # )
-  # service.insert_event(calendar_id, event)
 
   def new_event(calendar_id, lesson_datetime, lesson_name, time_zone)
       client = Signet::OAuth2::Client.new(client_options)
@@ -74,21 +69,6 @@ class CalendarsController < ApplicationController
       service = Google::Apis::CalendarV3::CalendarService.new
       service.authorization = client
 
-
-      # event = Google::Apis::CalendarV3::Event.new({
-        # start: Google::Apis::CalendarV3::EventDateTime.new(datetime: lesson_datetime),
-        # end: Google::Apis::CalendarV3::EventDateTime.new(datetime: lesson_datetime.advance(:hours => 1)),
-      #   start: {
-      #     'date_time': lesson_datetime,
-      #     # 'time_zone': 'America/New_York'
-      #   },
-      #   end:{
-      #     'date_time': lesson_datetime.advance(:hours => 1),
-      #     # 'time_zone': 'America/New_York'
-      #   },
-      #   summary: lesson_name
-      # })
-      # binding.pry
       event = Google::Apis::CalendarV3::Event.new(
         start: Google::Apis::CalendarV3::EventDateTime.new(date_time: lesson_datetime.to_datetime.rfc3339),
         end: Google::Apis::CalendarV3::EventDateTime.new(date_time: lesson_datetime.advance(:hours => 1).to_datetime.rfc3339),
@@ -96,22 +76,18 @@ class CalendarsController < ApplicationController
       )
       service.insert_event(calendar_id, event)
 
-    end
+  end
 
   private
-
-  def populate_calendar(calendar_name, module_num)
-
-  end
 
   def client_options
     {
       client_id: Rails.application.credentials.web[:client_id],
       client_secret: Rails.application.credentials.web[:client_secret],
-      authorization_uri: 'https://accounts.google.com/o/oauth2/auth',
+      authorization_uri: 'https://accounts.google.com/o/oauth2/auth?access_type=offline&prompt=consent',
       token_credential_uri: 'https://accounts.google.com/o/oauth2/token',
       scope: Google::Apis::CalendarV3::AUTH_CALENDAR,
-      redirect_uri: callback_url
+      redirect_uri: calendars_url
     }
   end
 
@@ -121,17 +97,17 @@ class CalendarsController < ApplicationController
     case module_number
     when "1"
       {0 => "Hashketball Review",
-       # 1 => "Hashes and the Internet",
-       # 2 => "Intro to OO",
+       1 => "Hashes and the Internet",
+       2 => "Intro to OO",
        3 => "Object Relations (one to many)",
-       # 4 => "Object Relations (many to many)",
-       # 7 => "SQL Review",
-       # 8 => "Intro to ORMs",
-       # 9 => "Dynamic ORMs",
-       # 10 => "Intro to ActiveRecord",
-       # 14 => "ActiveRecord Associations",
-       # 17 => "Intro to Testing",
-       # 18 => "Intro to the Internet"
+       4 => "Object Relations (many to many)",
+       7 => "SQL Review",
+       8 => "Intro to ORMs",
+       9 => "Dynamic ORMs",
+       10 => "Intro to ActiveRecord",
+       14 => "ActiveRecord Associations",
+       17 => "Intro to Testing",
+       18 => "Intro to the Internet"
       }
     when "2"
       {
