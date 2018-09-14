@@ -15,7 +15,7 @@ class CalendarsController < ApplicationController
 
     session[:authorization] = response
 
-    redirect_to root_url
+    redirect_to calendars_url
   end
 
   def get_calendars
