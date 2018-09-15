@@ -38,13 +38,10 @@ class CalendarsController < ApplicationController
     @calendar_list = all_calendars.select {|calendar| calendar.access_role=="owner"}
     @calendar_list.sort! { |a, b|  a.summary <=> b.summary }
     @timezones = TZInfo::Timezone.all_identifiers
-    # if unauthorized tries to refresh the token.  If it still doesn't work,
-    # redirect to authorization page.  This was just my best guess.
 
   end
 
   def create
-    # binding.pry
     calendar_id = params[:calendar][:id]
     module_number = params[:calendar][:module]
     start_date = params[:calendar][:start_date]
@@ -52,20 +49,19 @@ class CalendarsController < ApplicationController
     time_zone = params[:calendar][:time_zone]
     lesson_hash = get_module_lectures(module_number)
     lesson_hash.each do |days_from_start, lesson_name|
-      lesson_datetime = ActiveSupport::TimeZone[time_zone].parse("#{start_date} #{start_time}").advance(:days => days_from_start)
-      new_event(calendar_id, lesson_datetime, lesson_name, time_zone)
+      if lesson_name.is_a? Array # two lessons in a day
+          first_lesson_datetime = ActiveSupport::TimeZone[time_zone].parse("#{start_date} #{start_time}").advance(:days => days_from_start)
+          second_lesson_datetime = first_lesson_datetime + 4.hours
+          new_event(calendar_id, first_lesson_datetime, lesson_name[0], time_zone)
+          new_event(calendar_id, second_lesson_datetime, lesson_name[1], time_zone)
+
+      else # single lesson
+        lesson_datetime = ActiveSupport::TimeZone[time_zone].parse("#{start_date} #{start_time}").advance(:days => days_from_start)
+        new_event(calendar_id, lesson_datetime, lesson_name, time_zone)
+      end
     end
     redirect_to "https://calendar.google.com/calendar/embed?src=#{calendar_id}"
   end
-
-  # event = Google::Apis::CalendarV3::Event.new(
-  #   start: Google::Apis::CalendarV3::EventDateTime.new(
-    #date_time: lesson_datetime.to_datetime.rfc3339),
-  #   end: Google::Apis::CalendarV3::EventDateTime.new(
-  #        date_time: lesson_datetime.advance(:hours => 1).to_datetime.rfc3339),
-  #   summary: lesson_name
-  # )
-  # service.insert_event(calendar_id, event)
 
   def new_event(calendar_id, lesson_datetime, lesson_name, time_zone)
       client = Signet::OAuth2::Client.new(client_options)
@@ -74,21 +70,6 @@ class CalendarsController < ApplicationController
       service = Google::Apis::CalendarV3::CalendarService.new
       service.authorization = client
 
-
-      # event = Google::Apis::CalendarV3::Event.new({
-        # start: Google::Apis::CalendarV3::EventDateTime.new(datetime: lesson_datetime),
-        # end: Google::Apis::CalendarV3::EventDateTime.new(datetime: lesson_datetime.advance(:hours => 1)),
-      #   start: {
-      #     'date_time': lesson_datetime,
-      #     # 'time_zone': 'America/New_York'
-      #   },
-      #   end:{
-      #     'date_time': lesson_datetime.advance(:hours => 1),
-      #     # 'time_zone': 'America/New_York'
-      #   },
-      #   summary: lesson_name
-      # })
-      # binding.pry
       event = Google::Apis::CalendarV3::Event.new(
         start: Google::Apis::CalendarV3::EventDateTime.new(date_time: lesson_datetime.to_datetime.rfc3339),
         end: Google::Apis::CalendarV3::EventDateTime.new(date_time: lesson_datetime.advance(:hours => 1).to_datetime.rfc3339),
@@ -99,10 +80,6 @@ class CalendarsController < ApplicationController
     end
 
   private
-
-  def populate_calendar(calendar_name, module_num)
-
-  end
 
   def client_options
     {
@@ -122,7 +99,7 @@ class CalendarsController < ApplicationController
     when "1"
       {0 => "Hashketball Review",
        1 => "Hashes and the Internet",
-       2 => "Intro to OO",
+       2 => ["Intro to OO", "How to Pair"],
        3 => "Object Relations (one to many)",
        4 => "Object Relations (many to many)",
        7 => "SQL Review",
@@ -147,11 +124,20 @@ class CalendarsController < ApplicationController
         15 => "Rails Authorization"
       }
     when "3"
-      pass
+      {0 => "Hashketball Review",
+       1 => "Hashes and the Internet",
+       2 => ["Intro to OO", "How to Pair"]
+     }
     when "4"
-      pass
+      {0 => "Hashketball Review",
+       1 => "Hashes and the Internet",
+       2 => ["Intro to OO", "How to Pair"]
+     }
     when "5"
-      pass
+      {0 => "Hashketball Review",
+       1 => "Hashes and the Internet",
+       2 => ["Intro to OO", "How to Pair"]
+     }
     else 
       "Module number must be an integer between 1 and 5, inclusive."
     end

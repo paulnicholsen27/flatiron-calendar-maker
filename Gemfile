@@ -57,9 +57,7 @@ group :test do
   gem 'chromedriver-helper'
 end
 
-group :production do 
-  gem 'pg'         #gem to use in production environment
-end
+gem 'pg'         #gem to use in production environment
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'google-api-client', require: 'google/apis/calendar_v3'
