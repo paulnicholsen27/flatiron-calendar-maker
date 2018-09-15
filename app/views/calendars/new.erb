@@ -17,7 +17,7 @@
         <label for="calendar[module]">Module</label>
         <select required name="calendar[module]">
             <option value="">Select a Module</option>
-            <% (1..5).to_a.each do |module_number| %>
+            <% (1..4).to_a.each do |module_number| %>
                 <option value="<%=module_number%>"><%= "Module #{module_number}" %></option>
             <% end %>
         </div>

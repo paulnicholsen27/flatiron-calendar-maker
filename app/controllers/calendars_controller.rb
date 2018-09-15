@@ -52,12 +52,12 @@ class CalendarsController < ApplicationController
       if lesson_name.is_a? Array # two lessons in a day
           first_lesson_datetime = ActiveSupport::TimeZone[time_zone].parse("#{start_date} #{start_time}").advance(:days => days_from_start)
           second_lesson_datetime = first_lesson_datetime + 4.hours
-          new_event(calendar_id, first_lesson_datetime, lesson_name[0], time_zone)
-          new_event(calendar_id, second_lesson_datetime, lesson_name[1], time_zone)
+          new_event(calendar_id, first_lesson_datetime, "Lecture: #{lesson_name[0]}", time_zone)
+          new_event(calendar_id, second_lesson_datetime, "Lecture: #{lesson_name[1]}", time_zone)
 
       else # single lesson
         lesson_datetime = ActiveSupport::TimeZone[time_zone].parse("#{start_date} #{start_time}").advance(:days => days_from_start)
-        new_event(calendar_id, lesson_datetime, lesson_name, time_zone)
+        new_event(calendar_id, lesson_datetime, "Lecture: #{lesson_name}", time_zone)
       end
     end
     redirect_to "https://calendar.google.com/calendar/embed?src=#{calendar_id}"
@@ -98,8 +98,8 @@ class CalendarsController < ApplicationController
     case module_number
     when "1"
       {0 => "Hashketball Review",
-       1 => "Hashes and the Internet",
-       2 => ["Intro to OO", "How to Pair"],
+       1 => ["Hashes and the Internet", "How to Pair Effectively"],
+       2 => "Intro to OO",
        3 => "Object Relations (one to many)",
        4 => "Object Relations (many to many)",
        7 => "SQL Review",
@@ -112,7 +112,7 @@ class CalendarsController < ApplicationController
       }
     when "2"
       {
-        0 => "Sinatra and MVC",
+        0 => ["Intro to Rack", "Sinatra and MVC"],
         1 => "Sinatra Forms and REST",
         2 => "Sinatra Forms and Associated Objects",
         3 => "Sinatra Forms and Associated Objects cont.",
@@ -121,22 +121,32 @@ class CalendarsController < ApplicationController
         8 => "Rails Associations",
         9 => "Rails Forms and Validations",
         14 => "Sessions and Cookies",
-        15 => "Rails Authorization"
+        15 => ["Rails Authentication", "Rails Authorization"],
+        16 => "CSS Fundamentals"
       }
     when "3"
-      {0 => "Hashketball Review",
-       1 => "Hashes and the Internet",
-       2 => ["Intro to OO", "How to Pair"]
+      {
+        0 => "Intro to JS",
+        1 => "Functional Programming",
+        2 => "The DOM & Event Listeners",
+        3 => "Promises and Fetch",
+        4 => "Object Oriented JS",
+        7 => "Putting It All Together",
+        14 => "Rails API"
+
      }
     when "4"
-      {0 => "Hashketball Review",
-       1 => "Hashes and the Internet",
-       2 => ["Intro to OO", "How to Pair"]
-     }
-    when "5"
-      {0 => "Hashketball Review",
-       1 => "Hashes and the Internet",
-       2 => ["Intro to OO", "How to Pair"]
+      {0 => ["Javascript to JSX", "React Props"],
+       1 => ["Reach State and Events", "React State and Forms"],
+       2 => "Thinking in React",
+       3 => "Component Lifecycle",
+       4 => ["Hogs Review", "React Best Practices"],
+       8 => "React Router",
+       10 => ["Auth Part I", "Auth Part II"],
+       15 => "Higher Order Components",
+       17 => ["Redux Part I", "Redux Part II"],
+       18 => "Redux",
+       19 => "DIY Redux"
      }
     else 
       "Module number must be an integer between 1 and 5, inclusive."
