@@ -4,5 +4,4 @@ function checkMonday() {
     // if (!inpObj.checkValidity()) {
     //     document.getElementById("demo").innerHTML = inpObj.validationMessage;
     // }
-    alert("test");
 }
