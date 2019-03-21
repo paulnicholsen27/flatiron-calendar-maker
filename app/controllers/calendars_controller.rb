@@ -41,6 +41,14 @@ class CalendarsController < ApplicationController
 
   end
 
+  def make_lesson_title(title, mod)
+    if mod == 0
+      return title
+    else 
+      return "Lecture: #{title}"
+    end
+  end
+
   def create
     calendar_id = params[:calendar][:id]
     module_number = params[:calendar][:module]
@@ -49,15 +57,15 @@ class CalendarsController < ApplicationController
     time_zone = params[:calendar][:time_zone]
     lesson_hash = get_module_lectures(module_number)
     lesson_hash.each do |days_from_start, lesson_name|
-      if lesson_name.is_a? Array # two lessons in a day
-          first_lesson_datetime = ActiveSupport::TimeZone[time_zone].parse("#{start_date} #{start_time}").advance(:days => days_from_start)
-          second_lesson_datetime = first_lesson_datetime + 4.hours
-          new_event(calendar_id, first_lesson_datetime, "Lecture: #{lesson_name[0]}", time_zone)
-          new_event(calendar_id, second_lesson_datetime, "Lecture: #{lesson_name[1]}", time_zone)
-
+      if lesson_name.is_a? Array # multiple lessons in a day
+          first_lesson_start_time = ActiveSupport::TimeZone[time_zone].parse("#{start_date} #{start_time}").advance(:days => days_from_start)
+          lesson_name.each_with_index do |lesson, index|
+            lesson_start_time = first_lesson_start_time + (index * 2).hours
+            new_event(calendar_id, lesson_start_time, make_lesson_title(lesson, module_number), time_zone)
+          end
       else # single lesson
         lesson_datetime = ActiveSupport::TimeZone[time_zone].parse("#{start_date} #{start_time}").advance(:days => days_from_start)
-        new_event(calendar_id, lesson_datetime, "Lecture: #{lesson_name}", time_zone)
+        new_event(calendar_id, lesson_datetime, make_lesson_title(lesson_name, module_number), time_zone)
       end
     end
     redirect_to "https://calendar.google.com/calendar/embed?src=#{calendar_id}"
@@ -96,6 +104,17 @@ class CalendarsController < ApplicationController
     # returns a hash with the day of the lecture as the key and the name of 
     # the lecture as the value.
     case module_number
+    when "0"
+      {
+        0 => ["Campus Tour & Orientation", "Icebreaker #1 - People Bingo", "First Day Lunch"],
+        1 => ["Icebreaker #2 - A Big Wind Blows", "Logistics Talk"],
+        2 => "Campus Potluck Mixer Lunch",
+        3 => "Events Talk",
+        4 => ["Stress Less In Code Mode", "Community Talk"],
+        8 => "Week 2 Survey",
+        43 => "Week 7 Survey",
+        64 => "Week 10 Survey"
+      }
     when "1"
       {0 => "Hashketball Review",
        1 => ["Hashes and the Internet", "How to Pair Effectively"],
