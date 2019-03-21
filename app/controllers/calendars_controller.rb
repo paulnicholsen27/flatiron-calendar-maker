@@ -42,7 +42,7 @@ class CalendarsController < ApplicationController
   end
 
   def make_lesson_title(title, mod)
-    if mod == 0
+    if mod == "0"
       return title
     else 
       return "Lecture: #{title}"
@@ -110,10 +110,12 @@ class CalendarsController < ApplicationController
         1 => ["Icebreaker #2 - A Big Wind Blows", "Logistics Talk"],
         2 => "Campus Potluck Mixer Lunch",
         3 => "Events Talk",
-        4 => ["Stress Less In Code Mode", "Community Talk"],
+        4 => ["Stress Less In Code Mode", "Community Talk", "Community Happy Hour"],
         8 => "Week 2 Survey",
         43 => "Week 7 Survey",
-        64 => "Week 10 Survey"
+        64 => "Week 10 Survey",
+        101 => "Science Fair",
+        102 => ["Week 15 Survey", "Graduation"]
       }
     when "1"
       {0 => "Hashketball Review",
