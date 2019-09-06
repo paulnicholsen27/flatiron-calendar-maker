@@ -62,34 +62,38 @@ class CalendarsController < ApplicationController
     start_date = params[:calendar][:start_date]
     start_time = params[:calendar][:start_time]
     time_zone = params[:calendar][:time_zone]
+    invitees = params[:calendar][:invitees]
+    if invitees # convert comma-separated string into hash
+      invitees = invitees.split(",").map {|email_address| {email: email_address.strip}}
+    end
     lesson_hash = get_module_lectures(module_number)
     lesson_hash.each do |days_from_start, lesson_name|
       if lesson_name.is_a? Array # multiple lessons in a day
           first_lesson_start_time = ActiveSupport::TimeZone[time_zone].parse("#{start_date} #{start_time}").advance(:days => days_from_start)
           lesson_name.each_with_index do |lesson, index|
             lesson_start_time = first_lesson_start_time + (index * 2).hours
-            new_event(calendar_id, lesson_start_time, make_lesson_title(lesson, module_number), time_zone)
+            new_event(calendar_id, lesson_start_time, make_lesson_title(lesson, module_number), time_zone, invitees)
           end
       else # single lesson
         lesson_datetime = ActiveSupport::TimeZone[time_zone].parse("#{start_date} #{start_time}").advance(:days => days_from_start)
-        new_event(calendar_id, lesson_datetime, make_lesson_title(lesson_name, module_number), time_zone)
+        new_event(calendar_id, lesson_datetime, make_lesson_title(lesson_name, module_number), time_zone, invitees)
       end
     end
     redirect_to "https://calendar.google.com/calendar/embed?src=#{calendar_id}"
   end
 
-  def new_event(calendar_id, lesson_datetime, lesson_name, time_zone)
+  def new_event(calendar_id, lesson_datetime, lesson_name, time_zone, invitees)
       client = Signet::OAuth2::Client.new(client_options)
       client.update!(session[:authorization])
 
       service = Google::Apis::CalendarV3::CalendarService.new
       service.authorization = client
-
       event = Google::Apis::CalendarV3::Event.new(
         start: Google::Apis::CalendarV3::EventDateTime.new(date_time: lesson_datetime.to_datetime.rfc3339),
         end: Google::Apis::CalendarV3::EventDateTime.new(date_time: lesson_datetime.advance(:hours => 1).to_datetime.rfc3339),
-        summary: lesson_name
-      )
+        summary: lesson_name,
+        attendees: invitees
+        )
       service.insert_event(calendar_id, event)
 
     end

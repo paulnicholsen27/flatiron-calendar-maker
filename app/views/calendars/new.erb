@@ -42,6 +42,10 @@
         <%= select("calendar", "time_zone", @timezones, {:class=>'form-control'}) %>
         </div>
 
+        <div class="form-group" id="invitees">
+        <label for="calendar_invitees">Comma-separated list of email addresses of invitees (optional)</label>
+        <input type="text" name="calendar[invitees]" />
+        </div>
         <%= submit_tag "Populate calendar", :onclick => "return checkMonday()" %>
     <% end %>
 </div>
