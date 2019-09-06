@@ -93,6 +93,12 @@ class CalendarsController < ApplicationController
         end: Google::Apis::CalendarV3::EventDateTime.new(date_time: lesson_datetime.advance(:hours => 1).to_datetime.rfc3339),
         summary: lesson_name,
         attendees: invitees
+      )
+      event.reminders = Google::Apis::CalendarV3::Event::Reminders.new(
+          use_default: false,
+          overrides: [
+            Google::Apis::CalendarV3::EventReminder.new(reminder_method:"popup", minutes: 10),
+          ]
         )
       service.insert_event(calendar_id, event)
 
