@@ -41,8 +41,12 @@ class CalendarsController < ApplicationController
 
   end
 
+  def non_lecture_events
+    ["Code Challenge", "Project Presentations"]
+  end
+
   def make_lesson_title(title, mod)
-    if mod == "0"
+    if mod == "0" || non_lecture_events.include?(title) # Community events, code challenge, etc.
       return title
     else 
       return "Lecture: #{title}"
@@ -50,6 +54,9 @@ class CalendarsController < ApplicationController
   end
 
   def create
+    # creates all calendar events for a given module.  In the event that there is more than one event
+    # scheduled for a given day, the first event is put at the default start time given by client,
+    # and subsequent events are staggered with start times two hours apart.
     calendar_id = params[:calendar][:id]
     module_number = params[:calendar][:module]
     start_date = params[:calendar][:start_date]
@@ -117,7 +124,7 @@ class CalendarsController < ApplicationController
         101 => "Science Fair",
         102 => ["Week 15 Survey", "Graduation"]
       }
-    when "1"
+    when "1a"
       {0 => "Hashketball Review",
        1 => ["Hashes and the Internet", "How to Pair Effectively"],
        2 => "Intro to OO",
@@ -130,6 +137,21 @@ class CalendarsController < ApplicationController
        14 => "ActiveRecord Associations",
        17 => "Intro to Testing",
        18 => "Intro to the Internet"
+      }
+    when "1b"
+      {0 => "Hashketball Review",
+       1 => "Intro to OO",
+       2 => "Object Relations (one to many)",
+       3 => "Object Relations (many to many)",
+       4 => "Intro to Inheritance",
+       7 => "OO Relationships Review",
+       8 => "Code Challenge",
+       9 => ["Intro to SQL", "Intro to ORMs"],
+       10 => "Intro to ActiveRecord",
+       11 => "ActiveRecord Associations",
+       14 => "Hashes and the Internet",
+       16 => "Intro to Testing",
+       18 => ["Intro to the Internet", "Project Presentations"]
       }
     when "2"
       {

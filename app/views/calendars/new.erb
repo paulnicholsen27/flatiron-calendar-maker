@@ -14,13 +14,16 @@
         </select>
 
         <div class="form-group">
-        <label for="calendar[module]">Module</label>
-        <select required name="calendar[module]">
-            <option value="">Select a Module</option>
-            <% (1..4).to_a.each do |module_number| %>
-                <option value="<%=module_number%>"><%= "Module #{module_number}" %></option>
-            <% end %>
-            <option value=0>Community Events</option>
+            <label for="calendar[module]">Module</label>
+            <select required name="calendar[module]">
+                <option value="">Select a Module</option>
+                <option value="1a">Module 1 (classic)</option>
+                <option value="1b">Module 1 (revamp)</option>
+                <option value="2">Module 2</option>
+                <option value="3">Module 3</option>
+                <option value="4">Module 4</option>
+                <option value=0>Community Events</option>
+            </select>
         </div>
 
         <div class="form-group">
