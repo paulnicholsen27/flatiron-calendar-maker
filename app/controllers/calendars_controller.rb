@@ -146,7 +146,7 @@ class CalendarsController < ApplicationController
        10 => "Intro to ActiveRecord",
        14 => "ActiveRecord Associations",
        17 => "Intro to Testing",
-       18 => "Intro to the Internet"
+       18 => ["Intro to the Internet", "Project Presentations"]
       }
     when "1b"
       {0 => "Hashketball Review",
@@ -163,7 +163,7 @@ class CalendarsController < ApplicationController
        16 => "Intro to Testing",
        18 => ["Intro to the Internet", "Project Presentations"]
       }
-    when "2"
+    when "2a"
       {
         0 => ["Intro to Rack", "Sinatra and MVC"],
         1 => "Sinatra Forms and REST",
@@ -176,6 +176,24 @@ class CalendarsController < ApplicationController
         14 => "Sessions and Cookies",
         15 => ["Rails Authentication", "Rails Authorization"],
         16 => "CSS Fundamentals"
+      }
+    when "2b"
+      {
+        0 => ["Intro to the Internet", "Intro to Rails"],
+        1 => ["Rails Index/Show Pages", "Restful Routing"],
+        2 => ["Rails New/Create Forms", "Edit/Update/Delete Forms"],
+        3 => "Rails Associations",
+        4 => "Rails Nested Forms",
+        7 => ["Rails Layout and Partials", "Rails Validations"]
+        8 => "Rails Review",
+        9 => "Code Challenge",
+        10 => "Sessions and Cookies",
+        11 => ["Rails Authentication", "Rails Authorization"],
+        14 => "CSS Fundamentals",
+        15 => "Rails Testing",
+        18 => "Project Presentations"
+
+
       }
     when "3"
       {
