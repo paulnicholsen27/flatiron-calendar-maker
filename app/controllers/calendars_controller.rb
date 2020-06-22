@@ -184,7 +184,7 @@ class CalendarsController < ApplicationController
         2 => ["Rails New/Create Forms", "Edit/Update/Delete Forms"],
         3 => "Rails Associations",
         4 => "Rails Nested Forms",
-        7 => ["Rails Layout and Partials", "Rails Validations"]
+        7 => ["Rails Layout and Partials", "Rails Validations"],
         8 => "Rails Review",
         9 => "Code Challenge",
         10 => "Sessions and Cookies",
