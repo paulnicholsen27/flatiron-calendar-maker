@@ -180,10 +180,10 @@ class CalendarsController < ApplicationController
     when "2b"
       {
         0 => ["Intro to the Internet", "Intro to Rails"],
-        1 => ["Rails Index/Show Pages", "Restful Routing"],
-        2 => ["Rails New/Create Forms", "Edit/Update/Delete Forms"],
-        3 => "Rails Associations",
-        4 => "Rails Nested Forms",
+        1 => ["Rails Index/Show Pages"],
+        2 => ["Rails New/Create Forms", "Restful Routing"],
+        3 => "Edit/Update/Delete Forms",
+        4 => "Rails Associations",
         7 => ["Rails Layout and Partials", "Rails Validations"],
         8 => "Rails Review",
         9 => "Code Challenge",
